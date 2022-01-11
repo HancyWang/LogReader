@@ -1,0 +1,22 @@
+为符合ISO80601-2-90，软件升级到1.3.0
+1，在设置菜单内增加累计总运行时间(9999天23时59分)，只计运行时间(包括冷却模式)
+
+2，增加日志文件Logging.vmf(符合ISO80601-2-90要求)
+2.1 记录报警日志，
+2.1.1 报警状态  alarm condition ---例如：缺水
+2.1.2 报警开始时间 the date and time of beginning of the alarm condition
+2.1.3 报警结束时间 the date and time of end of the alarm condition;
+2.1.4 报警本身的限值
+
+2.2 记录报警信号的非激活状态
+2.2.1 定义  its identity; 例如：声音暂停
+2.2.2 非激活状态开始时间 the date and time of the occurrence
+2.1.3 非激活状态结束时间 the date and time of end of the occurrence
+
+2.3 操作记录
+2.3.1 设备的初始状态    initial state of the respiratory high-flow therapy equipment;每次---开机状态
+2.3.2 报警设置的改变    change of operator-adjustable alarm settings;
+2.3.3 治疗参数被改变    change of operator-adjustable therapy settings;
+2.3.4 电源被改变    power supply source change;
+2.3.5 使用前检测的结果 result of the last pre-use check
+
