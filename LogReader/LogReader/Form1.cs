@@ -18,7 +18,7 @@ namespace LogReader
         public string SW_VERSION = "1.0.0";
 
         //现在没有真实数据，模拟假数据
-        public const bool GENERATE_SIMU_DATA = true;
+        public const bool GENERATE_SIMU_DATA = false;
         public byte simu_code = 0;
 
         //配置文件(强制1字节对齐)
@@ -942,12 +942,12 @@ namespace LogReader
                                         + start_hour.ToString().PadLeft(2, '0') + @":" + start_min.ToString().PadLeft(2, '0') + @":" + start_second.ToString().PadLeft(2, '0');
                     lvi.SubItems.Add(srt_startTime);
                     //log 结束时间
-                    int end_year = m_list_logInfo[i].START_YEAR_L + m_list_logInfo[i].START_YEAR_H * 256;
-                    int end_month = m_list_logInfo[i].START_MONTH;
-                    int end_day = m_list_logInfo[i].START_DAY;
-                    int end_hour = m_list_logInfo[i].START_HOUR;
-                    int end_min = m_list_logInfo[i].START_MIN;
-                    int end_second = m_list_logInfo[i].START_SECOND;
+                    int end_year = m_list_logInfo[i].END_YEAR_L + m_list_logInfo[i].END_YEAR_H * 256;
+                    int end_month = m_list_logInfo[i].END_MONTH;
+                    int end_day = m_list_logInfo[i].END_DAY;
+                    int end_hour = m_list_logInfo[i].END_HOUR;
+                    int end_min = m_list_logInfo[i].END_MIN;
+                    int end_second = m_list_logInfo[i].END_SECOND;
                     string srt_endTime = end_year.ToString() + @"/" + end_month.ToString().PadLeft(2, '0') + @"/" + end_day.ToString().PadLeft(2, '0') + @" "
                                         + end_hour.ToString().PadLeft(2, '0') + @":" + end_min.ToString().PadLeft(2, '0') + @":" + end_second.ToString().PadLeft(2, '0');
                     lvi.SubItems.Add(srt_endTime);
@@ -1671,7 +1671,7 @@ namespace LogReader
 
         public int check_loggingFile_cnt(string strPath)
         {
-            var loggingFilePath = Directory.GetFiles(strPath, "Logging.vmf"); //获取"Logging.vmf"文件的路径名
+            var loggingFilePath = Directory.GetFiles(strPath, "LOGGING.vmf"); //获取"Logging.vmf"文件的路径名
      
             return loggingFilePath.Length;
         }
