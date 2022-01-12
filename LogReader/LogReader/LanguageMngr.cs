@@ -186,11 +186,11 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                str = "中优先级报警,";
+                str = "中优先级报警";
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                str = "Medium priority alarm,";
+                str = "Medium priority alarm";
             }
             return str;
         }
@@ -1513,6 +1513,20 @@ namespace LogReader
             }
             return str;
         }
+        public static string software_ver()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "软件版本:";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "Software Version:";
+            }
+            return str;
+        }
         
+
     }
 }
