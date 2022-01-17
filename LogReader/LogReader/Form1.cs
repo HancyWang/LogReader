@@ -21,6 +21,8 @@ namespace LogReader
         public const bool GENERATE_SIMU_DATA = false;
         public byte simu_code = 0;
 
+        public List<string> m_log_list = new List<string>();
+
         //配置文件(强制1字节对齐)
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct SYS_CFG
@@ -112,9 +114,17 @@ namespace LogReader
         public class LOG_ALARM
         {
             public byte ALARM_CODE;
-            public byte ALARM_DATA_L;
+            public byte ALARM_DATA_L;   //废弃不用了
             public byte ALARM_DATA_H;
             public byte ALARM_PRIORITY_VAL;
+            public byte ALARM_RT_DATA_L;       //报警实时值
+            public byte ALARM_RT_DATA_H;
+            public byte ALARM_SET_VAL_L;       //报警设置值
+            public byte ALARM_SET_VAL_H;
+            public byte ALARM_LOW_LIMIT_L;      //报警下限值
+            public byte ALARM_LOW_LIMIT_H;
+            public byte ALARM_HIGH_LIMIT_L;     //报警上限值
+            public byte ALARM_HIGH_LIMIT_H;
         }
 
         //2.LOG类型之-"非激活状态"
@@ -158,20 +168,47 @@ namespace LogReader
         //4.Pre-use check
         public const byte PRE_USE_CHECK_PASS = 1;
         public const byte PRE_USE_CHECK_FAIL = 2;
+        public const byte PRE_USE_CHECK_NA = 3;     //跳过，未检查
         public class LOG_PRE_USE_CHECK
         {
             public byte check_result;
+            public byte _6Pin_circle_check_result;  //回路类型检查结果
             public byte _6Pin_circle_type_L;
             public byte _6Pin_circle_type_H;
-            public byte temp_patient;
-            public byte temp_outlet;
-            public byte temp_ambient;
-            public byte circle_resitor_val; //回路电阻
+            public byte temp_patient_check_result;  //患者端温度检查结果
+            public byte temp_patient_rt;
+            public byte temp_patient_low_limit;
+            public byte temp_patient_high_limit;
+            public byte temp_outlet_check_result;   //出气口温度检查结果
+            public byte temp_outlet_rt;
+            public byte temp_outlet_low_limit;
+            public byte temp_outlet_high_limit;
+            public byte temp_ambient_check_result;  //环境温度检查结果
+            public byte temp_ambient_rt;
+            public byte temp_ambient_low_limit;
+            public byte temp_ambient_high_limit;
+            public byte circle_resistor_check_result;   //回路电阻检查结果
+            public byte circle_resistor_val; 
+            public byte circle_resistor_low_limit;
+            public byte circle_resistor_high_limit;
+            public byte chamber_check_result;           //湿化罐安装传感器检查结果
             public byte WATER_LEVEL_SENSOR_HADC_L;
             public byte WATER_LEVEL_SENSOR_HADC_H;
+            public byte chamber_low_limit_L;
+            public byte chamber_low_limit_H;
+            public byte chamber_high_limit_L;
+            public byte chamber_high_limit_H;
+            public byte waterLevel_check_result;    //水位传感器检查结果
             public byte WATER_LEVEL_SENSOR_LADC_L;
             public byte WATER_LEVEL_SENSOR_LADC_H;
+            public byte water_level_low_limit_L;
+            public byte water_level_low_limit_H;
+            public byte water_level_high_limit_L;
+            public byte water_level_high_limit_H;
+            public byte leak_check_result;      //泄漏检测结果
             public byte LEAK_CHECK_VAL;         //泄露检测
+            public byte leak_low_limit;         
+            public byte leak_high_limit;         
         }
 
         //5.切换供电电源
@@ -425,7 +462,7 @@ namespace LogReader
             this.listView_log.Columns.Add(LanguageMngr.log_type(), 100, HorizontalAlignment.Left);
             this.listView_log.Columns.Add(LanguageMngr.start_time(), 140, HorizontalAlignment.Left);
             this.listView_log.Columns.Add(LanguageMngr.end_time(), 140, HorizontalAlignment.Left);
-            this.listView_log.Columns.Add(LanguageMngr.Logging_record(), 1200, HorizontalAlignment.Left);
+            this.listView_log.Columns.Add(LanguageMngr.Logging_record(), 2000, HorizontalAlignment.Left);
         }
 
         private void CreateLoggingFile(DateTime tmBegin)
@@ -683,10 +720,10 @@ namespace LogReader
                     int circle_type = (new Random()).Next(21, 31);
                     log_preUse_check._6Pin_circle_type_L = Convert.ToByte(circle_type % 256);
                     log_preUse_check._6Pin_circle_type_H = Convert.ToByte(circle_type / 256);
-                    log_preUse_check.temp_patient = Convert.ToByte(rnd_val.Next(20, 90));
-                    log_preUse_check.temp_outlet = Convert.ToByte(rnd_val.Next(20, 90));
-                    log_preUse_check.temp_ambient = Convert.ToByte(rnd_val.Next(20, 90));
-                    log_preUse_check.circle_resitor_val = Convert.ToByte(rnd_val.Next(100, 255));
+                    log_preUse_check.temp_patient_rt = Convert.ToByte(rnd_val.Next(20, 90));
+                    log_preUse_check.temp_outlet_rt = Convert.ToByte(rnd_val.Next(20, 90));
+                    log_preUse_check.temp_ambient_rt = Convert.ToByte(rnd_val.Next(20, 90));
+                    log_preUse_check.circle_resistor_val = Convert.ToByte(rnd_val.Next(100, 255));
                     log_preUse_check.WATER_LEVEL_SENSOR_HADC_L = 0;
                     log_preUse_check.WATER_LEVEL_SENSOR_HADC_H = 0;
                     log_preUse_check.WATER_LEVEL_SENSOR_LADC_L = 0;
@@ -696,10 +733,10 @@ namespace LogReader
                     log_info.DATA_80 = log_preUse_check.check_result;
                     log_info.DATA_81 = log_preUse_check._6Pin_circle_type_L;
                     log_info.DATA_82 = log_preUse_check._6Pin_circle_type_H;
-                    log_info.DATA_83 = log_preUse_check.temp_patient;
-                    log_info.DATA_84 = log_preUse_check.temp_outlet;
-                    log_info.DATA_85 = log_preUse_check.temp_ambient;
-                    log_info.DATA_86 = log_preUse_check.circle_resitor_val;
+                    log_info.DATA_83 = log_preUse_check.temp_patient_rt;
+                    log_info.DATA_84 = log_preUse_check.temp_outlet_rt;
+                    log_info.DATA_85 = log_preUse_check.temp_ambient_rt;
+                    log_info.DATA_86 = log_preUse_check.circle_resistor_val;
                     log_info.DATA_87 = log_preUse_check.WATER_LEVEL_SENSOR_HADC_L;
                     log_info.DATA_88 = log_preUse_check.WATER_LEVEL_SENSOR_HADC_H;
                     log_info.DATA_89 = log_preUse_check.WATER_LEVEL_SENSOR_LADC_L;
@@ -805,6 +842,7 @@ namespace LogReader
                 setToolStripMenuItem.Text = "设置";
                 languageToolStripMenuItem.Text = "语言";
                 importDataToolStripMenuItem.Text = "导入数据";
+                exportDataToolStripMenuItem.Text="导出数据";
                 chineseToolStripMenuItem.Text = "中文";
                 englishToolStripMenuItem.Text = "英文";
                 aboutToolStripMenuItem.Text = "关于";
@@ -822,6 +860,7 @@ namespace LogReader
                 setToolStripMenuItem.Text = "Set";
                 languageToolStripMenuItem.Text = "Language";
                 importDataToolStripMenuItem.Text = "ImportData";
+                exportDataToolStripMenuItem.Text = "ExportData";
                 chineseToolStripMenuItem.Text = "Chinese";
                 englishToolStripMenuItem.Text = "English";
                 aboutToolStripMenuItem.Text = "About";
@@ -864,6 +903,7 @@ namespace LogReader
                 }
                 else if (file_cnt == 1)
                 {
+                    m_log_list.Clear();
                     //do nothing
                     //MessageBox.Show("ok");
                     m_list_logInfo.Clear();  //先清除，在使用
@@ -902,6 +942,8 @@ namespace LogReader
                 {
                     this.listView_log.BeginUpdate();  //数据更新，UI暂时挂起，直到EndUpdate绘制控件，可以有效避免闪烁并大大提高加载速度 
 
+                    string export_data = "";
+
                     ListViewItem lvi = new ListViewItem();
                     lvi.Text = (i + 1).ToString();
                     //Log类型
@@ -930,6 +972,7 @@ namespace LogReader
                     }
 
                     lvi.SubItems.Add(str_logType);
+                    export_data += str_logType;
 
                     //log 开始时间
                     int start_year = m_list_logInfo[i].START_YEAR_L + m_list_logInfo[i].START_YEAR_H * 256;
@@ -941,16 +984,28 @@ namespace LogReader
                     string srt_startTime = start_year.ToString() + @"/" + start_month.ToString().PadLeft(2, '0') + @"/" + start_day.ToString().PadLeft(2, '0') + @" "
                                         + start_hour.ToString().PadLeft(2, '0') + @":" + start_min.ToString().PadLeft(2, '0') + @":" + start_second.ToString().PadLeft(2, '0');
                     lvi.SubItems.Add(srt_startTime);
+                    export_data += "," + srt_startTime;
                     //log 结束时间
-                    int end_year = m_list_logInfo[i].END_YEAR_L + m_list_logInfo[i].END_YEAR_H * 256;
-                    int end_month = m_list_logInfo[i].END_MONTH;
-                    int end_day = m_list_logInfo[i].END_DAY;
-                    int end_hour = m_list_logInfo[i].END_HOUR;
-                    int end_min = m_list_logInfo[i].END_MIN;
-                    int end_second = m_list_logInfo[i].END_SECOND;
-                    string srt_endTime = end_year.ToString() + @"/" + end_month.ToString().PadLeft(2, '0') + @"/" + end_day.ToString().PadLeft(2, '0') + @" "
-                                        + end_hour.ToString().PadLeft(2, '0') + @":" + end_min.ToString().PadLeft(2, '0') + @":" + end_second.ToString().PadLeft(2, '0');
-                    lvi.SubItems.Add(srt_endTime);
+                    if (log_type == LOG_TYPE_ALARM
+                        || log_type == LOG_TYPE_NONE_ACTIVE)
+                    {
+                        int end_year = m_list_logInfo[i].END_YEAR_L + m_list_logInfo[i].END_YEAR_H * 256;
+                        int end_month = m_list_logInfo[i].END_MONTH;
+                        int end_day = m_list_logInfo[i].END_DAY;
+                        int end_hour = m_list_logInfo[i].END_HOUR;
+                        int end_min = m_list_logInfo[i].END_MIN;
+                        int end_second = m_list_logInfo[i].END_SECOND;
+                        string srt_endTime = end_year.ToString() + @"/" + end_month.ToString().PadLeft(2, '0') + @"/" + end_day.ToString().PadLeft(2, '0') + @" "
+                                            + end_hour.ToString().PadLeft(2, '0') + @":" + end_min.ToString().PadLeft(2, '0') + @":" + end_second.ToString().PadLeft(2, '0');
+                        lvi.SubItems.Add(srt_endTime);
+                        export_data += "," + srt_endTime;
+                    }
+                    else
+                    {
+                        lvi.SubItems.Add(@"/");
+                        export_data += "," + @"/";
+                    }
+                    
                     //log record
                     //根据log类型来
                     string str_log_info = "";
@@ -962,6 +1017,14 @@ namespace LogReader
                         log_alarm.ALARM_DATA_L = m_list_logInfo[i].DATA_81;
                         log_alarm.ALARM_DATA_H = m_list_logInfo[i].DATA_82;
                         log_alarm.ALARM_PRIORITY_VAL = m_list_logInfo[i].DATA_83;
+                        log_alarm.ALARM_RT_DATA_L = m_list_logInfo[i].DATA_84;
+                        log_alarm.ALARM_RT_DATA_H = m_list_logInfo[i].DATA_85;
+                        log_alarm.ALARM_SET_VAL_L = m_list_logInfo[i].DATA_86;
+                        log_alarm.ALARM_SET_VAL_H = m_list_logInfo[i].DATA_87;
+                        log_alarm.ALARM_LOW_LIMIT_L = m_list_logInfo[i].DATA_88;
+                        log_alarm.ALARM_LOW_LIMIT_H = m_list_logInfo[i].DATA_89;
+                        log_alarm.ALARM_HIGH_LIMIT_L = m_list_logInfo[i].DATA_90;
+                        log_alarm.ALARM_HIGH_LIMIT_H = m_list_logInfo[i].DATA_91;
 
                         //优先级
                         if (log_alarm.ALARM_PRIORITY_VAL == ALARM_PRIORITY_MEDIUM)      //中优先级
@@ -973,9 +1036,73 @@ namespace LogReader
                             str_log_info += LanguageMngr.high_priority_alarm();
                         }
                         str_log_info += ",";
-                        str_log_info += get_detail_alarm_info(log_alarm.ALARM_CODE);
+                        str_log_info += get_detail_alarm_info(log_alarm.ALARM_CODE) + ",";
 
-                        //TODO, 后续得加上数据ALARM_DATA_L和ALARM_DATA_H
+                        bool b_add_set_val = false;
+                        bool b_add_low_limit_val = false;
+                        bool b_add_high_limit_val = false;
+
+                        //判断哪些报警要显示设置值
+                        if (log_alarm.ALARM_CODE == 20
+                            || log_alarm.ALARM_CODE == 27
+                            || log_alarm.ALARM_CODE == 30
+                            || log_alarm.ALARM_CODE == 31
+                            || log_alarm.ALARM_CODE == 37
+                            )  
+                        {
+                            b_add_set_val = true;
+               
+                        }
+                        else if (log_alarm.ALARM_CODE == 27
+                            || log_alarm.ALARM_CODE == 29
+                            || log_alarm.ALARM_CODE == 30
+                            || log_alarm.ALARM_CODE == 31
+                            || log_alarm.ALARM_CODE == 36
+                            || log_alarm.ALARM_CODE == 38
+                            || log_alarm.ALARM_CODE == 39
+                            || log_alarm.ALARM_CODE == 40
+                            || log_alarm.ALARM_CODE == 41
+                            || log_alarm.ALARM_CODE == 42
+                            || log_alarm.ALARM_CODE == 43
+                            || log_alarm.ALARM_CODE == 47
+                            || log_alarm.ALARM_CODE == 48
+                            )  
+                        {
+                            b_add_low_limit_val = true;
+                        }
+                        else if (log_alarm.ALARM_CODE == 28
+                           || log_alarm.ALARM_CODE == 30
+                           || log_alarm.ALARM_CODE == 31
+                           || log_alarm.ALARM_CODE == 38
+                           || log_alarm.ALARM_CODE == 39
+                           || log_alarm.ALARM_CODE == 40
+                           || log_alarm.ALARM_CODE == 41
+                           || log_alarm.ALARM_CODE == 42
+                           || log_alarm.ALARM_CODE == 43
+                           || log_alarm.ALARM_CODE == 47
+                           || log_alarm.ALARM_CODE == 48
+                           )
+                        {
+                            b_add_high_limit_val = true;
+                        }
+
+                        str_log_info += LanguageMngr.realtime_val() + Convert.ToInt32(log_alarm.ALARM_RT_DATA_L + 256 * log_alarm.ALARM_RT_DATA_H).ToString();
+                        str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
+                        if (b_add_set_val)
+                        {
+                            str_log_info += "," + LanguageMngr.set_val() + Convert.ToInt32(log_alarm.ALARM_SET_VAL_L + 256 * log_alarm.ALARM_SET_VAL_L).ToString();
+                            str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
+                        }
+                        if (b_add_low_limit_val)
+                        {
+                            str_log_info += "," + LanguageMngr.low_limit() + Convert.ToInt32(log_alarm.ALARM_LOW_LIMIT_L + 256 * log_alarm.ALARM_LOW_LIMIT_H).ToString();
+                            str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
+                        }
+                        if (b_add_high_limit_val)
+                        {
+                            str_log_info += "," + LanguageMngr.high_limit() + Convert.ToInt32(log_alarm.ALARM_HIGH_LIMIT_L + 256 * log_alarm.ALARM_HIGH_LIMIT_H).ToString();
+                            str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
+                        }
                     }
                     else if (log_type == LOG_TYPE_NONE_ACTIVE)
                     {
@@ -1020,31 +1147,35 @@ namespace LogReader
                             //设置流量
                             str_log_info += log_OP_record.SET_FLOW.ToString() + "L/min" + ",";
                             //设置高氧浓度报警限值
-                            str_log_info += LanguageMngr.high_O2Con_alarm_limit() + "：" + log_OP_record.SET_HIGH_O2CON_ALARM.ToString() + "%,";
+                            str_log_info += LanguageMngr.high_O2Con_alarm_limit() + ":" + log_OP_record.SET_HIGH_O2CON_ALARM.ToString() + "%,";
                             //设置低氧浓度报警限值
-                            str_log_info += LanguageMngr.low_O2Con_alarm_limit() + "：" + log_OP_record.SET_LOW_O2CON_ALARM.ToString() + "%,";
-                            //供电方式
-                            str_log_info += LanguageMngr.power_source() + ":";
-                            if (m_list_logInfo[i]._24V_SOURCE_FLG == LOG_INFO_24V_FROM_AC)
+                            str_log_info += LanguageMngr.low_O2Con_alarm_limit() + ":" + log_OP_record.SET_LOW_O2CON_ALARM.ToString() + "%,";
+                            if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
                             {
-                                str_log_info += LanguageMngr.AC_source();
+                                //供电方式
+                                str_log_info += LanguageMngr.power_source() + ":";
+                                if (m_list_logInfo[i]._24V_SOURCE_FLG == LOG_INFO_24V_FROM_AC)
+                                {
+                                    str_log_info += LanguageMngr.AC_source();
+                                }
+                                else if (m_list_logInfo[i]._24V_SOURCE_FLG == LOG_INFO_24V_FROM_BAT)
+                                {
+                                    str_log_info += LanguageMngr.bat();
+                                }
+                                str_log_info += ",";
+                                //空氧混合方式(A/M)
+                                str_log_info += LanguageMngr.blender_mode() + ":";
+                                if (log_OP_record.BLENDER_A_M == OP_RECORD_BLENDER_M_EXIST)
+                                {
+                                    str_log_info += LanguageMngr.manual();
+                                }
+                                else if (log_OP_record.BLENDER_A_M == OP_RECORD_BLENDER_A_EXIST)
+                                {
+                                    str_log_info += LanguageMngr.auto();
+                                }
+                                str_log_info += ",";
                             }
-                            else if (m_list_logInfo[i]._24V_SOURCE_FLG == LOG_INFO_24V_FROM_BAT)
-                            {
-                                str_log_info += LanguageMngr.bat();
-                            }
-                            str_log_info += ",";
-                            //空氧混合方式(A/M)
-                            str_log_info += LanguageMngr.blender_mode() + ":";
-                            if (log_OP_record.BLENDER_A_M == OP_RECORD_BLENDER_M_EXIST)
-                            {
-                                str_log_info += LanguageMngr.manual();
-                            }
-                            else if (log_OP_record.BLENDER_A_M == OP_RECORD_BLENDER_A_EXIST)
-                            {
-                                str_log_info += LanguageMngr.auto();
-                            }
-                            str_log_info += ",";
+                            
                             //设置氧浓度
                             str_log_info += LanguageMngr.set_O2Con() + ":";
                             str_log_info += log_OP_record.SET_O2_CON.ToString() + "%";
@@ -1074,7 +1205,7 @@ namespace LogReader
 
                             //运行状态
                             str_log_info += LanguageMngr.workstate() + ":";
-                            str_log_info += get_work_state(m_list_logInfo[i]);
+                            str_log_info += get_work_state(m_list_logInfo[i].WORK_STATE);
                         }
                         //治疗参数改变
                         else if (log_OP_record.OP_CODE == OP_RECORD_OpCode_SET_PARA_CHANGE)
@@ -1089,7 +1220,7 @@ namespace LogReader
                                     str_log_info += LanguageMngr.adult_mode();
                                     str_log_info += LanguageMngr.change_to();
                                 }
-                                else if (log_OP_record.OP_CHANGE_BEFORE_VAL == MODE_ADULT)
+                                else if (log_OP_record.OP_CHANGE_BEFORE_VAL == MODE_BABY)
                                 {
                                     str_log_info += LanguageMngr.baby_mode();
                                     str_log_info += LanguageMngr.change_to();
@@ -1099,7 +1230,7 @@ namespace LogReader
                                 {
                                     str_log_info += LanguageMngr.adult_mode();
                                 }
-                                else if (log_OP_record.OP_CHANGE_AFTER_VAL == MODE_ADULT)
+                                else if (log_OP_record.OP_CHANGE_AFTER_VAL == MODE_BABY)
                                 {
                                     str_log_info += LanguageMngr.baby_mode();
                                 }
@@ -1107,100 +1238,58 @@ namespace LogReader
 
                                 //运行状态
                                 str_log_info += LanguageMngr.workstate() + ":";
-                                str_log_info += get_work_state(m_list_logInfo[i]);
+                                str_log_info += get_work_state(m_list_logInfo[i].WORK_STATE);
                             }
                             //温度设置被改变
                             else if (log_OP_record.CHANGE_CODE == OP_RECORD_OPChangeCode_TEMP_SET)
                             {
-                                str_log_info += LanguageMngr.treatment_para_changed() + ":";
                                 str_log_info += LanguageMngr.temperature() + " ";
 
                                 str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_BEFORE_VAL.ToString() + "℃";
                                 str_log_info += LanguageMngr.change_to();
-                                str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_AFTER_VAL.ToString() + "℃";
+                                str_log_info += log_OP_record.OP_CHANGE_AFTER_VAL.ToString() + "℃";
 
                                 str_log_info += ",";
                                 //运行状态
                                 str_log_info += LanguageMngr.workstate() + ":";
-                                str_log_info += get_work_state(m_list_logInfo[i]);
+                                str_log_info += get_work_state(m_list_logInfo[i].WORK_STATE);
                             }
                             //流量设置被改变
                             else if (log_OP_record.CHANGE_CODE == OP_RECORD_OPChangeCode_FLOW_SET)
                             {
-                                str_log_info += LanguageMngr.treatment_para_changed() + ":";
-                                str_log_info += LanguageMngr.flow() + " ";
+                                str_log_info += LanguageMngr.flow();
 
                                 str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_BEFORE_VAL.ToString() + "L/min";
                                 str_log_info += LanguageMngr.change_to();
-                                str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_AFTER_VAL.ToString() + "L/min";
+                                str_log_info += log_OP_record.OP_CHANGE_AFTER_VAL.ToString() + "L/min";
 
                                 str_log_info += ",";
                                 //运行状态
                                 str_log_info += LanguageMngr.workstate() + ":";
-                                str_log_info += get_work_state(m_list_logInfo[i]);
+                                str_log_info += get_work_state(m_list_logInfo[i].WORK_STATE);
                             }
                             //氧浓度设置被改变
                             else if (log_OP_record.CHANGE_CODE == OP_RECORD_OPChangeCode_O2Con_SET)
                             {
-                                str_log_info += LanguageMngr.treatment_para_changed() + ":";
                                 str_log_info += LanguageMngr.O2Con() + " ";
 
                                 str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_BEFORE_VAL.ToString() + "%";
                                 str_log_info += LanguageMngr.change_to();
-                                str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_AFTER_VAL.ToString() + "%";
+                                str_log_info += log_OP_record.OP_CHANGE_AFTER_VAL.ToString() + "%";
 
                                 str_log_info += ",";
                                 //运行状态
                                 str_log_info += LanguageMngr.workstate() + ":";
-                                str_log_info += get_work_state(m_list_logInfo[i]);
+                                str_log_info += get_work_state(m_list_logInfo[i].WORK_STATE);
                             }
                             //治疗模式被改变(work state被改变)
                             else if (log_OP_record.CHANGE_CODE == OP_RECORD_OPChangeCode_TREAATMENT_MODE_CHANGE)
                             {
-                                str_log_info += LanguageMngr.treatment_para_changed() + ":";
-
                                 //运行状态
-                                str_log_info += LanguageMngr.workstate() + ":";
-                                str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_BEFORE_VAL.ToString();
+                                //str_log_info += LanguageMngr.workstate() + ":";
+                                str_log_info += LanguageMngr.from() + get_work_state(log_OP_record.OP_CHANGE_BEFORE_VAL);
                                 str_log_info += LanguageMngr.change_to();
-                                str_log_info += LanguageMngr.from() + log_OP_record.OP_CHANGE_AFTER_VAL.ToString();
-
-                                //if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_POWER_OFF)
-                                //{
-
-                                //}
-                                //else if(log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_SELFCHECK)
-                                //{
-
-                                //}
-                                //else if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_PREUSE_CHECK)
-                                //{
-
-                                //}
-                                //else if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_PAUSE)
-                                //{
-
-                                //}
-                                //else if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_RUN)
-                                //{
-
-                                //}
-                                //else if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_TARNSPORT_MODE)
-                                //{
-
-                                //}
-                                //else if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_COOLING_DOWN_MODE)
-                                //{
-
-                                //}
-                                //else if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_LOWFLOW_MODE_PAUSE)
-                                //{
-
-                                //}
-                                //else if (log_OP_record.OP_CHANGE_BEFORE_VAL == OP_WorkState_LOWFLOW_MODE_RUN)
-                                //{
-
-                                //}
+                                str_log_info += get_work_state(log_OP_record.OP_CHANGE_AFTER_VAL);
                             }
                         }
 
@@ -1209,18 +1298,46 @@ namespace LogReader
                     {
                         LOG_PRE_USE_CHECK log_pre_use_check = new LOG_PRE_USE_CHECK();
 
+
                         log_pre_use_check.check_result = m_list_logInfo[i].DATA_80;
-                        log_pre_use_check._6Pin_circle_type_L = m_list_logInfo[i].DATA_81;
-                        log_pre_use_check._6Pin_circle_type_H = m_list_logInfo[i].DATA_82;
-                        log_pre_use_check.temp_patient = m_list_logInfo[i].DATA_83;
-                        log_pre_use_check.temp_outlet = m_list_logInfo[i].DATA_84;
-                        log_pre_use_check.temp_ambient = m_list_logInfo[i].DATA_85;
-                        log_pre_use_check.circle_resitor_val = m_list_logInfo[i].DATA_86;
-                        log_pre_use_check.WATER_LEVEL_SENSOR_HADC_L = m_list_logInfo[i].DATA_87;
-                        log_pre_use_check.WATER_LEVEL_SENSOR_HADC_H = m_list_logInfo[i].DATA_88;
-                        log_pre_use_check.WATER_LEVEL_SENSOR_LADC_L = m_list_logInfo[i].DATA_89;
-                        log_pre_use_check.WATER_LEVEL_SENSOR_LADC_H = m_list_logInfo[i].DATA_90;
-                        log_pre_use_check.LEAK_CHECK_VAL = m_list_logInfo[i].DATA_91;
+                        log_pre_use_check._6Pin_circle_check_result = m_list_logInfo[i].DATA_81;
+                        log_pre_use_check._6Pin_circle_type_L = m_list_logInfo[i].DATA_82;
+                        log_pre_use_check._6Pin_circle_type_H = m_list_logInfo[i].DATA_83;
+                        log_pre_use_check.temp_patient_check_result = m_list_logInfo[i].DATA_84;
+                        log_pre_use_check.temp_patient_rt = m_list_logInfo[i].DATA_85;
+                        log_pre_use_check.temp_patient_low_limit = m_list_logInfo[i].DATA_86;
+                        log_pre_use_check.temp_patient_high_limit = m_list_logInfo[i].DATA_87;
+                        log_pre_use_check.temp_outlet_check_result = m_list_logInfo[i].DATA_88;
+                        log_pre_use_check.temp_outlet_rt = m_list_logInfo[i].DATA_89;
+                        log_pre_use_check.temp_outlet_low_limit = m_list_logInfo[i].DATA_90;
+                        log_pre_use_check.temp_outlet_high_limit = m_list_logInfo[i].DATA_91;
+                        log_pre_use_check.temp_ambient_check_result = m_list_logInfo[i].DATA_92;
+                        log_pre_use_check.temp_ambient_rt = m_list_logInfo[i].DATA_93;
+                        log_pre_use_check.temp_ambient_low_limit = m_list_logInfo[i].DATA_94;
+                        log_pre_use_check.temp_ambient_high_limit = m_list_logInfo[i].DATA_95;
+                        log_pre_use_check.circle_resistor_check_result = m_list_logInfo[i].DATA_96;
+                        log_pre_use_check.circle_resistor_val = m_list_logInfo[i].DATA_97;
+                        log_pre_use_check.circle_resistor_low_limit = m_list_logInfo[i].DATA_98;
+                        log_pre_use_check.circle_resistor_high_limit = m_list_logInfo[i].DATA_99;
+                        log_pre_use_check.chamber_check_result = m_list_logInfo[i].DATA_100;
+                        log_pre_use_check.WATER_LEVEL_SENSOR_HADC_L = m_list_logInfo[i].DATA_101;
+                        log_pre_use_check.WATER_LEVEL_SENSOR_HADC_H = m_list_logInfo[i].DATA_102;
+                        log_pre_use_check.chamber_low_limit_L = m_list_logInfo[i].DATA_103;
+                        log_pre_use_check.chamber_low_limit_H = m_list_logInfo[i].DATA_104;
+                        log_pre_use_check.chamber_high_limit_L = m_list_logInfo[i].DATA_105;
+                        log_pre_use_check.chamber_high_limit_H = m_list_logInfo[i].DATA_106;
+                        log_pre_use_check.waterLevel_check_result = m_list_logInfo[i].DATA_107;
+                        log_pre_use_check.WATER_LEVEL_SENSOR_LADC_L = m_list_logInfo[i].DATA_108;
+                        log_pre_use_check.WATER_LEVEL_SENSOR_LADC_H = m_list_logInfo[i].DATA_109;
+                        log_pre_use_check.water_level_low_limit_L = m_list_logInfo[i].DATA_110;
+                        log_pre_use_check.water_level_low_limit_H = m_list_logInfo[i].DATA_111;
+                        log_pre_use_check.water_level_high_limit_L = m_list_logInfo[i].DATA_112;
+                        log_pre_use_check.water_level_high_limit_H = m_list_logInfo[i].DATA_113;
+                        log_pre_use_check.leak_check_result = m_list_logInfo[i].DATA_114;
+                        log_pre_use_check.LEAK_CHECK_VAL = m_list_logInfo[i].DATA_115;
+                        log_pre_use_check.leak_low_limit = m_list_logInfo[i].DATA_116;
+                        log_pre_use_check.leak_high_limit = m_list_logInfo[i].DATA_117;
+
 
                         //pre-use 检测结果
                         if (log_pre_use_check.check_result == PRE_USE_CHECK_PASS)
@@ -1231,51 +1348,57 @@ namespace LogReader
                         {
                             str_log_info += LanguageMngr.pre_use_check_fail();
                         }
+                        str_log_info += ",";
                         //回路类型
-                        str_log_info += LanguageMngr._6Pin_circle_ID() + ":";
-                        str_log_info += "0" + (log_pre_use_check._6Pin_circle_type_L + log_pre_use_check._6Pin_circle_type_H * 256).ToString() + ",";
+                        if (preUseCheckResult(log_pre_use_check._6Pin_circle_check_result) != "")
+                        {
+                            str_log_info += LanguageMngr.circle_and_cable_check() + "-";
+                            str_log_info += LanguageMngr._6Pin_circle_ID() + ":" + preUseCheckResult(log_pre_use_check._6Pin_circle_check_result);
+                            str_log_info += "(0" + (log_pre_use_check._6Pin_circle_type_L + log_pre_use_check._6Pin_circle_type_H * 256).ToString() + "),";
+                        }
                         //患者端温度
-                        str_log_info += LanguageMngr.patient_temperature() + ":" + log_pre_use_check.temp_patient.ToString() + "℃" + ",";
+                        if (preUseCheckResult(log_pre_use_check.temp_patient_check_result) != "")
+                        {
+                            str_log_info += LanguageMngr.patient_temperature() + ":" + preUseCheckResult(log_pre_use_check.temp_patient_check_result)
+                                + "(" + log_pre_use_check.temp_patient_rt.ToString() + "℃" + "),";
+                        }
                         //出气口温度
-                        str_log_info += LanguageMngr.outlet_temperature() + ":" + log_pre_use_check.temp_outlet.ToString() + "℃" + ",";
+                        if (preUseCheckResult(log_pre_use_check.temp_outlet_check_result) != "")
+                        {
+                            str_log_info += LanguageMngr.outlet_temperature() + ":" + preUseCheckResult(log_pre_use_check.temp_outlet_check_result)
+                                + "(" + log_pre_use_check.temp_outlet_rt.ToString() + "℃" + "),";
+                        }
                         //环境温度
-                        str_log_info += LanguageMngr.ambient_temperature() + ":" + log_pre_use_check.temp_ambient.ToString() + "℃" + ",";
+                        if (preUseCheckResult(log_pre_use_check.temp_ambient_check_result) != "")
+                        {
+                            str_log_info += LanguageMngr.ambient_temperature() + ":" + preUseCheckResult(log_pre_use_check.temp_ambient_check_result)
+                                + "(" + log_pre_use_check.temp_ambient_rt.ToString() + "℃" + "),";
+                        }
                         //回路电阻
-                        str_log_info += LanguageMngr._6Pin_circle_resistor() + ":" + log_pre_use_check.circle_resitor_val.ToString() + "Ω" + ",";
+                        if (preUseCheckResult(log_pre_use_check.circle_resistor_check_result) != "")
+                        {
+                            str_log_info += LanguageMngr._6Pin_circle_resistor() + ":" + preUseCheckResult(log_pre_use_check.circle_resistor_check_result)
+                                + "(" + log_pre_use_check.circle_resistor_val.ToString() + "Ω" + "),";
+                        }
                         //水罐安装检查
-                        int humidifyingCan_ADC_val = log_pre_use_check.WATER_LEVEL_SENSOR_HADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_HADC_H * 256;
-                        str_log_info += LanguageMngr.alarm_code_check_chamber() + ":";
-                        if (humidifyingCan_ADC_val > 2000)
+                        if (preUseCheckResult(log_pre_use_check.chamber_check_result) != "")
                         {
-                            str_log_info += LanguageMngr.OK();
+                            str_log_info += LanguageMngr.alarm_code_check_chamber() + ":" + preUseCheckResult(log_pre_use_check.chamber_check_result)
+                                + "(" + Convert.ToInt32(log_pre_use_check.WATER_LEVEL_SENSOR_HADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_HADC_H * 256).ToString() + "),";
                         }
-                        else
-                        {
-                            str_log_info += LanguageMngr.NG();
-                        }
-                        str_log_info += ",";
                         //水位检查
-                        int water_level_ADC_val = log_pre_use_check.WATER_LEVEL_SENSOR_LADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_LADC_H * 256;
-                        str_log_info += LanguageMngr.water_level_check() + ":";
-                        if (water_level_ADC_val > 1200)
+                        if (preUseCheckResult(log_pre_use_check.waterLevel_check_result) != "")
                         {
-                            str_log_info += LanguageMngr.OK();
+
+                            str_log_info += LanguageMngr.water_level_check() + ":" + preUseCheckResult(log_pre_use_check.waterLevel_check_result)
+                                + "(" + Convert.ToInt32(log_pre_use_check.WATER_LEVEL_SENSOR_LADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_LADC_H * 256).ToString() + "),";
                         }
-                        else
-                        {
-                            str_log_info += LanguageMngr.NG();
-                        }
-                        str_log_info += ",";
                         //泄露检查
-                        str_log_info += LanguageMngr.leak_check() + ":";
-                        if (log_pre_use_check.LEAK_CHECK_VAL < 3)
+                        if (preUseCheckResult(log_pre_use_check.leak_check_result) != "")
                         {
-                            str_log_info += LanguageMngr.OK();
-                        }
-                        else
-                        {
-                            str_log_info += LanguageMngr.NG();
-                        }
+                            str_log_info += LanguageMngr.leak_check() + ":" + preUseCheckResult(log_pre_use_check.leak_check_result)
+                                + "(" + Convert.ToInt32(log_pre_use_check.LEAK_CHECK_VAL).ToString() + "L/min)";
+                        } 
                     }
                     else if (log_type == LOG_TYPE_24_SWITCH)
                     {
@@ -1315,53 +1438,111 @@ namespace LogReader
 
                     }
                     lvi.SubItems.Add(str_log_info);
+                    export_data += "," + str_log_info;
+                    m_log_list.Add(export_data);
+
                     this.listView_log.Items.Add(lvi);
                     this.listView_log.EndUpdate();  //结束数据处理，UI界面一次性绘制。 
                 }
             }
         }
 
-        private string get_work_state(LOG_INFO log_info )
+        private string data_unit_mark_by(byte code)
+        {
+            string str = "";
+            if (code == 20
+                || code == 31)
+            {
+                str = "℃";
+            }
+            else if (code == 27
+                || code == 30)
+            {
+                str = "L/min";
+            }
+            else if (code == 28
+                || code == 29
+                || code == 36
+                || code == 37
+                )
+            {
+                str = "%";
+            }
+            else if (code == 38
+                || code == 39
+                || code == 40
+                || code == 41
+                || code == 42
+                || code == 43
+                || code == 47
+                )
+            {
+                str = "V";
+            }
+            else if (code == 48)
+            {
+                str = "rmp";
+            }
+
+            return str;
+        }
+
+        private string preUseCheckResult(byte result)
+        {
+            string str = "";
+            if (result == PRE_USE_CHECK_PASS)
+            {
+                str = LanguageMngr.PASS();
+            }
+            else if (result == PRE_USE_CHECK_FAIL)
+            {
+                str = LanguageMngr.FAIL();
+            }
+            return str;
+        }
+
+        private string get_work_state(byte work_state )
         {
             string str_log_info = "";
-            if (log_info.WORK_STATE == OP_WorkState_POWER_OFF)
+            if (work_state == OP_WorkState_POWER_OFF)
             {
                 str_log_info += LanguageMngr.power_off();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_SELFCHECK)
+            else if (work_state == OP_WorkState_SELFCHECK)
             {
                 str_log_info += LanguageMngr.selfcheck();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_PREUSE_CHECK)
+            else if (work_state == OP_WorkState_PREUSE_CHECK)
             {
                 str_log_info += LanguageMngr.pre_use_check();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_PAUSE)
+            else if (work_state == OP_WorkState_PAUSE)
             {
                 str_log_info += LanguageMngr.pause();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_RUN)
+            else if (work_state == OP_WorkState_RUN)
             {
                 str_log_info += LanguageMngr.run();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_TARNSPORT_MODE)
+            else if (work_state == OP_WorkState_TARNSPORT_MODE)
             {
                 str_log_info += LanguageMngr.transmode();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_COOLING_DOWN_MODE)
+            else if (work_state == OP_WorkState_COOLING_DOWN_MODE)
             {
                 str_log_info += LanguageMngr.cooling_down_mode();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_LOWFLOW_MODE_PAUSE)
+            else if (work_state == OP_WorkState_LOWFLOW_MODE_PAUSE)
             {
                 str_log_info += LanguageMngr.low_flow_mode_pause();
             }
-            else if (log_info.WORK_STATE == OP_WorkState_LOWFLOW_MODE_RUN)
+            else if (work_state == OP_WorkState_LOWFLOW_MODE_RUN)
             {
                 str_log_info += LanguageMngr.low_flow_mode_run();
             }
             return str_log_info;
         }
+        
 
         private string get_detail_alarm_info(byte ALARM_CODE)
         {
@@ -1768,6 +1949,42 @@ namespace LogReader
             {
                 update_listView();
             }
+        }
+
+        private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (m_log_list.Count() == 0)
+            {
+                MessageBox.Show(LanguageMngr.no_data());
+                return;
+            }
+   
+
+            //MessageBox.Show("请选择要保存文件的文件夹");
+            //先将数据到到本地
+            string strPath = "";
+            if (this.folderBrowserDialog_saveFile.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            strPath = folderBrowserDialog_saveFile.SelectedPath;//获取打开的文件路径名
+            string fileName = strPath + @"\" + label_SN_Value.Text + ".csv";
+
+            FileStream fs = new FileStream(fileName, FileMode.Create);
+            StreamWriter sw = new StreamWriter(fs, Encoding.GetEncoding("gb2312"));
+
+            //写入头
+            sw.WriteLine("No." + "," + LanguageMngr.log_type() + "," + LanguageMngr.start_time() + "," + LanguageMngr.end_time() + "," + LanguageMngr.Logging_record());
+
+            for (int i = 0; i < m_log_list.Count(); i++)
+            {
+                sw.WriteLine(i.ToString() + "," + m_log_list[i]);
+            }
+
+            sw.Close();
+            fs.Close();
+            MessageBox.Show(strPath+LanguageMngr.exportComplete());
         }
     }
 }

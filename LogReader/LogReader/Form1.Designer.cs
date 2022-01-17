@@ -35,6 +35,7 @@
             this.chineseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.englishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listView_log = new System.Windows.Forms.ListView();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -53,6 +54,7 @@
             this.button_pre_page = new System.Windows.Forms.Button();
             this.button_end_page = new System.Windows.Forms.Button();
             this.button_top_page = new System.Windows.Forms.Button();
+            this.folderBrowserDialog_saveFile = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1.SuspendLayout();
             this.groupBox_equipInfo.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -74,7 +76,8 @@
             // 
             this.setToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.languageToolStripMenuItem,
-            this.importDataToolStripMenuItem});
+            this.importDataToolStripMenuItem,
+            this.exportDataToolStripMenuItem});
             this.setToolStripMenuItem.Name = "setToolStripMenuItem";
             this.setToolStripMenuItem.Size = new System.Drawing.Size(42, 24);
             this.setToolStripMenuItem.Text = "Set";
@@ -91,14 +94,14 @@
             // chineseToolStripMenuItem
             // 
             this.chineseToolStripMenuItem.Name = "chineseToolStripMenuItem";
-            this.chineseToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.chineseToolStripMenuItem.Size = new System.Drawing.Size(135, 26);
             this.chineseToolStripMenuItem.Text = "Chinese";
             this.chineseToolStripMenuItem.Click += new System.EventHandler(this.chineseToolStripMenuItem_Click);
             // 
             // englishToolStripMenuItem
             // 
             this.englishToolStripMenuItem.Name = "englishToolStripMenuItem";
-            this.englishToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.englishToolStripMenuItem.Size = new System.Drawing.Size(135, 26);
             this.englishToolStripMenuItem.Text = "English";
             this.englishToolStripMenuItem.Click += new System.EventHandler(this.englishToolStripMenuItem_Click);
             // 
@@ -108,6 +111,13 @@
             this.importDataToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.importDataToolStripMenuItem.Text = "ImportData";
             this.importDataToolStripMenuItem.Click += new System.EventHandler(this.importDataToolStripMenuItem_Click);
+            // 
+            // exportDataToolStripMenuItem
+            // 
+            this.exportDataToolStripMenuItem.Name = "exportDataToolStripMenuItem";
+            this.exportDataToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.exportDataToolStripMenuItem.Text = "ExportData";
+            this.exportDataToolStripMenuItem.Click += new System.EventHandler(this.exportDataToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -344,6 +354,8 @@
         private System.Windows.Forms.Button button_pre_page;
         private System.Windows.Forms.Button button_end_page;
         private System.Windows.Forms.Button button_top_page;
+        private System.Windows.Forms.ToolStripMenuItem exportDataToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog_saveFile;
     }
 }
 

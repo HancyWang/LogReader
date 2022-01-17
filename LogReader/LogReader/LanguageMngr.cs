@@ -167,7 +167,8 @@ namespace LogReader
             return str;
         }
 
-        public static string it_is_not_logging_file()
+        public static string it_is_not_logging_file
+            ()
         {
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
@@ -738,7 +739,7 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                str = "检查水罐";
+                str = "水罐安装检查";
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
@@ -998,11 +999,37 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                str = "Pre-use check:PASS,";
+                str = "Pre-use check:PASS";
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                str = "Pre-use check:PASS,";
+                str = "Pre-use check:PASS";
+            }
+            return str;
+        }
+        public static string PASS()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "PASS";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "PASS";
+            }
+            return str;
+        }
+        public static string FAIL()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "FAIL";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "FAIL";
             }
             return str;
         }
@@ -1011,11 +1038,79 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                str = "Pre-use check:FAIL,";
+                str = "Pre-use check:FAIL";
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                str = "Pre-use check:FAIL,";
+                str = "Pre-use check:FAIL";
+            }
+            return str;
+        }
+        public static string realtime_val()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "实时值";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "real time value ";
+            }
+            return str;
+        }
+        public static string set_val()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "设置值";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "set value ";
+            }
+            return str;
+        }
+        public static string low_limit()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "下限值";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "low limit value ";
+            }
+            return str;
+        }
+        public static string high_limit()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "上限值";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "high limit value ";
+            }
+            return str;
+        }
+
+
+        
+        public static string circle_and_cable_check()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "回路和连接线检查";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "circle and connect cable check";
             }
             return str;
         }
@@ -1028,7 +1123,7 @@ namespace LogReader
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                str = "6Pin circle ID";
+                str = "ID";
             }
             return str;
         }
@@ -1301,7 +1396,7 @@ namespace LogReader
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                str = "changed from";
+                str = "changed from ";
             }
             return str;
         }
@@ -1314,7 +1409,7 @@ namespace LogReader
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                str = "to";
+                str = "to ";
             }
             return str;
         }
@@ -1496,7 +1591,7 @@ namespace LogReader
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                str = "flow";
+                str = "flow ";
             }
             return str;
         }
@@ -1526,7 +1621,33 @@ namespace LogReader
             }
             return str;
         }
+        public static string exportComplete()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "导出完毕";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = " export successful.";
+            }
+            return str;
+        }
         
+        public static string no_data()
+        {
+            string str = "";
+            if (m_lang == LANGUAGE.CHINESE)
+            {
+                str = "无数据";
+            }
+            else if (m_lang == LANGUAGE.ENGLISH)
+            {
+                str = "No Data.";
+            }
+            return str;
+        }
 
     }
 }
