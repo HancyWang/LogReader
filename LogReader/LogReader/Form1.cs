@@ -88,7 +88,7 @@ namespace LogReader
 
         public const int DEVICE_O2FLO = 1;
         public const int DEVICE_O2FLO_PRO = 2;
-        public const int DEVICE_ID = DEVICE_O2FLO;
+        public int DEVICE_ID = DEVICE_O2FLO;
 
         //数据链表
         public List<LOG_INFO> m_list_logInfo = new List<LOG_INFO>();
@@ -1180,7 +1180,7 @@ namespace LogReader
                             str_log_info += LanguageMngr.high_O2Con_alarm_limit() + ":" + log_OP_record.SET_HIGH_O2CON_ALARM.ToString() + "%,";
                             //设置低氧浓度报警限值
                             str_log_info += LanguageMngr.low_O2Con_alarm_limit() + ":" + log_OP_record.SET_LOW_O2CON_ALARM.ToString() + "%,";
-                            if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                            if (DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
                             {
                                 //供电方式
                                 str_log_info += LanguageMngr.power_source() + ":";
@@ -1817,6 +1817,16 @@ namespace LogReader
                 str_machineType += (char)machine_type[i];
             }
             label_equipType_Value.Text = str_machineType;
+            if (label_equipType_Value.Text == "VUN003")
+            {
+                LanguageMngr.get_device_id(Form1.DEVICE_O2FLO_PRO);
+                DEVICE_ID = Form1.DEVICE_O2FLO_PRO;
+            }
+            if (label_equipType_Value.Text == "VUN001")
+            {
+                LanguageMngr.get_device_id(Form1.DEVICE_O2FLO);
+                DEVICE_ID = Form1.DEVICE_O2FLO;
+            }
 
             //2.SN
             byte[] SN = br.ReadBytes(128);

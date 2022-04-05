@@ -17,8 +17,18 @@ namespace LogReader
 
         public LanguageMngr()
         {
-
+            
         }
+
+
+        static int device_id = 0;
+        static public void get_device_id(int deviceID)
+        {
+            device_id = deviceID;
+        }
+
+        
+       
 
         //public string set()
         //{
@@ -317,11 +327,11 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO)
+                if (device_id == Form1.DEVICE_O2FLO)
                 {
                     str = "系统故障E9-Memeory故障";
                 }
-                else if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                else if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E9-电池故障";
                 }
@@ -329,11 +339,11 @@ namespace LogReader
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO)
+                if (device_id == Form1.DEVICE_O2FLO)
                 {
                     str = "System Error E9-Memeory error";
                 }
-                else if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                else if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E9-Battery error";
                 }
@@ -347,14 +357,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E10-和驱动板通信失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E10-Communicate with driver error";
                 }
@@ -367,14 +377,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E11-氧气混合模块故障";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E11-Blender error";
                 }
@@ -386,14 +396,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E12-主控板固件自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E12-MLB firmware error";
                 }
@@ -405,14 +415,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E13-驱动板固件自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E13-Driver firmware error";
                 }
@@ -424,14 +434,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E14-空氧混合板固件自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E14-Blender firmware error";
                 }
@@ -443,14 +453,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E15-主控板RAM自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E15-MLB RAM error";
                 }
@@ -462,14 +472,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E16-驱动板RAM自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E16-Driver RAM error";
                 }
@@ -481,14 +491,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E17-空氧混合板RAM自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E17-Blender RAM error";
                 }
@@ -500,14 +510,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E18-主控板FLASH自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E18-MLB flash error";
                 }
@@ -519,14 +529,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E19-驱动板FLASH自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E19-Driver flash error";
                 }
@@ -538,14 +548,14 @@ namespace LogReader
             string str = "";
             if (m_lang == LANGUAGE.CHINESE)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "系统故障E20-空氧混合板FLASH自检失败";
                 }
             }
             else if (m_lang == LANGUAGE.ENGLISH)
             {
-                if (Form1.DEVICE_ID == Form1.DEVICE_O2FLO_PRO)
+                if (device_id == Form1.DEVICE_O2FLO_PRO)
                 {
                     str = "System Error E20-Blender flash error";
                 }
