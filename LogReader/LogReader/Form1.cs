@@ -142,8 +142,8 @@ namespace LogReader
         public byte OP_RECORD_OpCode_ALARM_SET_CHANGE = 2; //报警设置改变
         public byte OP_RECORD_OpCode_SET_PARA_CHANGE = 3;  //治疗参数改变
 
-        public const byte MODE_BABY = 0;        //儿童
-        public const byte MODE_ADULT = 1;       //成人
+        public const byte MODE_BABY = 1;        //儿童
+        public const byte MODE_ADULT = 0;       //成人
 
         public byte OP_RECORD_OPChangeCode_ADULT_BABY_MODE = 1;
         public byte OP_RECORD_OPChangeCode_TEMP_SET = 2;
@@ -1036,14 +1036,35 @@ namespace LogReader
                             str_log_info += LanguageMngr.high_priority_alarm();
                         }
                         str_log_info += ",";
-                        str_log_info += get_detail_alarm_info(log_alarm.ALARM_CODE) + ",";
+                        str_log_info += get_detail_alarm_info(log_alarm.ALARM_CODE);
 
+                        bool b_add_realtime_val = false;
                         bool b_add_set_val = false;
                         bool b_add_low_limit_val = false;
                         bool b_add_high_limit_val = false;
 
+                        if (log_alarm.ALARM_CODE ==20
+                            || log_alarm.ALARM_CODE == 27
+                            || log_alarm.ALARM_CODE == 28
+                            || log_alarm.ALARM_CODE == 29
+                            || log_alarm.ALARM_CODE == 30
+                            || log_alarm.ALARM_CODE == 31
+                            || log_alarm.ALARM_CODE == 36
+                            || log_alarm.ALARM_CODE == 37
+                            || log_alarm.ALARM_CODE == 38
+                            || log_alarm.ALARM_CODE == 39
+                            || log_alarm.ALARM_CODE == 40
+                            || log_alarm.ALARM_CODE == 41
+                            || log_alarm.ALARM_CODE == 42
+                            || log_alarm.ALARM_CODE == 43
+                            || log_alarm.ALARM_CODE == 47
+                            || log_alarm.ALARM_CODE == 48
+                            )
+                        {
+                            b_add_realtime_val = true;
+                        }
                         //判断哪些报警要显示设置值
-                        if (log_alarm.ALARM_CODE == 20
+                        else if (log_alarm.ALARM_CODE == 20
                             || log_alarm.ALARM_CODE == 27
                             || log_alarm.ALARM_CODE == 30
                             || log_alarm.ALARM_CODE == 31
@@ -1073,6 +1094,7 @@ namespace LogReader
                         else if (log_alarm.ALARM_CODE == 28
                            || log_alarm.ALARM_CODE == 30
                            || log_alarm.ALARM_CODE == 31
+                           || log_alarm.ALARM_CODE == 37
                            || log_alarm.ALARM_CODE == 38
                            || log_alarm.ALARM_CODE == 39
                            || log_alarm.ALARM_CODE == 40
@@ -1086,11 +1108,19 @@ namespace LogReader
                             b_add_high_limit_val = true;
                         }
 
-                        str_log_info += LanguageMngr.realtime_val() + Convert.ToInt32(log_alarm.ALARM_RT_DATA_L + 256 * log_alarm.ALARM_RT_DATA_H).ToString();
+                        if (b_add_realtime_val)
+                        {
+                            str_log_info += ","+LanguageMngr.realtime_val() + Convert.ToInt32(log_alarm.ALARM_RT_DATA_L + 256 * log_alarm.ALARM_RT_DATA_H).ToString();
+                        }
+                        
                         str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
                         if (b_add_set_val)
                         {
-                            str_log_info += "," + LanguageMngr.set_val() + Convert.ToInt32(log_alarm.ALARM_SET_VAL_L + 256 * log_alarm.ALARM_SET_VAL_L).ToString();
+                            if (b_add_realtime_val)
+                            {
+                                str_log_info += ",";
+                            }
+                            str_log_info += LanguageMngr.set_val() + Convert.ToInt32(log_alarm.ALARM_SET_VAL_L + 256 * log_alarm.ALARM_SET_VAL_H).ToString();
                             str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
                         }
                         if (b_add_low_limit_val)
@@ -1349,6 +1379,19 @@ namespace LogReader
                             str_log_info += LanguageMngr.pre_use_check_fail();
                         }
                         str_log_info += ",";
+                        //水罐安装检查
+                        if (preUseCheckResult(log_pre_use_check.chamber_check_result) != "")
+                        {
+                            str_log_info += LanguageMngr.alarm_code_check_chamber() + ":" + preUseCheckResult(log_pre_use_check.chamber_check_result)
+                                + "(" + Convert.ToInt32(log_pre_use_check.WATER_LEVEL_SENSOR_HADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_HADC_H * 256).ToString() + "),";
+                        }
+                        //水位检查
+                        if (preUseCheckResult(log_pre_use_check.waterLevel_check_result) != "")
+                        {
+
+                            str_log_info += LanguageMngr.water_level_check() + ":" + preUseCheckResult(log_pre_use_check.waterLevel_check_result)
+                                + "(" + Convert.ToInt32(log_pre_use_check.WATER_LEVEL_SENSOR_LADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_LADC_H * 256).ToString() + "),";
+                        }
                         //回路类型
                         if (preUseCheckResult(log_pre_use_check._6Pin_circle_check_result) != "")
                         {
@@ -1380,19 +1423,7 @@ namespace LogReader
                             str_log_info += LanguageMngr._6Pin_circle_resistor() + ":" + preUseCheckResult(log_pre_use_check.circle_resistor_check_result)
                                 + "(" + log_pre_use_check.circle_resistor_val.ToString() + "Ω" + "),";
                         }
-                        //水罐安装检查
-                        if (preUseCheckResult(log_pre_use_check.chamber_check_result) != "")
-                        {
-                            str_log_info += LanguageMngr.alarm_code_check_chamber() + ":" + preUseCheckResult(log_pre_use_check.chamber_check_result)
-                                + "(" + Convert.ToInt32(log_pre_use_check.WATER_LEVEL_SENSOR_HADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_HADC_H * 256).ToString() + "),";
-                        }
-                        //水位检查
-                        if (preUseCheckResult(log_pre_use_check.waterLevel_check_result) != "")
-                        {
-
-                            str_log_info += LanguageMngr.water_level_check() + ":" + preUseCheckResult(log_pre_use_check.waterLevel_check_result)
-                                + "(" + Convert.ToInt32(log_pre_use_check.WATER_LEVEL_SENSOR_LADC_L + log_pre_use_check.WATER_LEVEL_SENSOR_LADC_H * 256).ToString() + "),";
-                        }
+                        
                         //泄露检查
                         if (preUseCheckResult(log_pre_use_check.leak_check_result) != "")
                         {
