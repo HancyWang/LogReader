@@ -420,6 +420,10 @@ namespace LogReader
 
             //listView
             Init_listView_log();
+
+
+            //int val = Convert.ToInt32(0x12 + 256 * 0);
+            //string test = "," + LanguageMngr.low_limit() + ((float)val/10).ToString("#.#");
         }
 
         private void red_cfg_file()
@@ -1110,7 +1114,17 @@ namespace LogReader
 
                         if (b_add_realtime_val)
                         {
-                            str_log_info += ","+LanguageMngr.realtime_val() + Convert.ToInt32(log_alarm.ALARM_RT_DATA_L + 256 * log_alarm.ALARM_RT_DATA_H).ToString();
+                            if ((log_alarm.ALARM_CODE >= 38 && log_alarm.ALARM_CODE <= 43)
+                                || log_alarm.ALARM_CODE == 47 || log_alarm.ALARM_CODE == 48
+                                )
+                            {
+                                int val = Convert.ToInt32(log_alarm.ALARM_RT_DATA_L + 256 * log_alarm.ALARM_RT_DATA_H);
+                                str_log_info += "," + LanguageMngr.realtime_val() + ((float)val/10).ToString("#.#");
+                            }
+                            else
+                            {
+                                str_log_info += "," + LanguageMngr.realtime_val() + Convert.ToInt32(log_alarm.ALARM_RT_DATA_L + 256 * log_alarm.ALARM_RT_DATA_H).ToString();
+                            }
                         }
                         
                         str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
@@ -1120,17 +1134,52 @@ namespace LogReader
                             {
                                 str_log_info += ",";
                             }
-                            str_log_info += LanguageMngr.set_val() + Convert.ToInt32(log_alarm.ALARM_SET_VAL_L + 256 * log_alarm.ALARM_SET_VAL_H).ToString();
+
+                            if ((log_alarm.ALARM_CODE >= 38 && log_alarm.ALARM_CODE <= 43)
+                                || log_alarm.ALARM_CODE == 47 || log_alarm.ALARM_CODE == 48
+                                )
+                            {
+                                int val = Convert.ToInt32(log_alarm.ALARM_SET_VAL_L + 256 * log_alarm.ALARM_SET_VAL_H);
+                                str_log_info += "," + LanguageMngr.set_val() + ((float)val/10).ToString("#.#");
+                            }
+                            else
+                            {
+                                str_log_info += LanguageMngr.set_val() + Convert.ToInt32(log_alarm.ALARM_SET_VAL_L + 256 * log_alarm.ALARM_SET_VAL_H).ToString();
+                            }
+
+                            
                             str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
                         }
                         if (b_add_low_limit_val)
                         {
-                            str_log_info += "," + LanguageMngr.low_limit() + Convert.ToInt32(log_alarm.ALARM_LOW_LIMIT_L + 256 * log_alarm.ALARM_LOW_LIMIT_H).ToString();
+                            if ((log_alarm.ALARM_CODE >= 38 && log_alarm.ALARM_CODE <= 43)
+                                //|| log_alarm.ALARM_CODE == 47 || log_alarm.ALARM_CODE == 48
+                                )
+                            {
+                                int val = Convert.ToInt32(log_alarm.ALARM_LOW_LIMIT_L + 256 * log_alarm.ALARM_LOW_LIMIT_L);
+                                str_log_info += "," + LanguageMngr.low_limit() + ((float)val/10).ToString("#.#");
+                            }
+                            else
+                            {
+                                str_log_info += "," + LanguageMngr.low_limit() + Convert.ToInt32(log_alarm.ALARM_LOW_LIMIT_L + 256 * log_alarm.ALARM_LOW_LIMIT_H).ToString();
+                            }
+
+                            
                             str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
                         }
                         if (b_add_high_limit_val)
                         {
-                            str_log_info += "," + LanguageMngr.high_limit() + Convert.ToInt32(log_alarm.ALARM_HIGH_LIMIT_L + 256 * log_alarm.ALARM_HIGH_LIMIT_H).ToString();
+                            if ((log_alarm.ALARM_CODE >= 38 && log_alarm.ALARM_CODE <= 43)
+                                //|| log_alarm.ALARM_CODE == 47 || log_alarm.ALARM_CODE == 48
+                                )
+                            {
+                                int val = Convert.ToInt32(log_alarm.ALARM_HIGH_LIMIT_L + 256 * log_alarm.ALARM_HIGH_LIMIT_H);
+                                str_log_info += "," + LanguageMngr.high_limit() + ((float)val/10).ToString("#.#");
+                            }
+                            else
+                            {
+                                str_log_info += "," + LanguageMngr.high_limit() + Convert.ToInt32(log_alarm.ALARM_HIGH_LIMIT_L + 256 * log_alarm.ALARM_HIGH_LIMIT_H).ToString();
+                            }
                             str_log_info += data_unit_mark_by(log_alarm.ALARM_CODE);
                         }
                     }
